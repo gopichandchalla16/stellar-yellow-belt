@@ -5,7 +5,6 @@ import TransactionStatus from '@/components/TransactionStatus';
 import ErrorBanner from '@/components/ErrorBanner';
 import { parseWalletError, WalletError } from '@/lib/errors';
 
-// Dynamically import components that use browser APIs
 const WalletModal = dynamic(() => import('@/components/WalletModal'), { ssr: false });
 const PollCard = dynamic(() => import('@/components/PollCard'), { ssr: false });
 
@@ -80,12 +79,12 @@ export default function Home() {
 
   return (
     <main className="min-h-screen gradient-bg">
-      {/* Header */}
       <header className="border-b border-gray-800 px-6 py-4 sticky top-0 z-10"
-        style={{ background: 'rgba(10,14,26,0.9)', backdropFilter: 'blur(12px)' }}>
+        style={{ background: 'rgba(10,14,26,0.95)', backdropFilter: 'blur(12px)' }}>
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-xl font-bold text-gray-900">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600
+              flex items-center justify-center text-xl font-bold text-gray-900">
               🗳️
             </div>
             <div>
@@ -94,22 +93,22 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="hidden sm:block text-xs bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 rounded-full px-3 py-1">
-              🟡 Testnet
-            </span>
+            <span className="hidden sm:block text-xs bg-yellow-500/10 text-yellow-400
+              border border-yellow-500/20 rounded-full px-3 py-1">🟡 Testnet</span>
             {walletAddress ? (
               <div className="flex items-center gap-2">
-                <span className="text-xs bg-teal-500/10 text-teal-400 border border-teal-500/20 rounded-full px-3 py-1">
-                  ● {shortAddr}
-                </span>
+                <span className="text-xs bg-teal-500/10 text-teal-400
+                  border border-teal-500/20 rounded-full px-3 py-1">● {shortAddr}</span>
                 <button onClick={handleDisconnect}
-                  className="text-xs bg-red-500/10 text-red-400 border border-red-500/20 rounded-full px-3 py-1 hover:bg-red-500/20 transition-colors">
+                  className="text-xs bg-red-500/10 text-red-400 border border-red-500/20
+                    rounded-full px-3 py-1 hover:bg-red-500/20 transition-colors">
                   Disconnect
                 </button>
               </div>
             ) : (
               <button onClick={() => setShowWalletModal(true)}
-                className="text-xs bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 rounded-full px-3 py-1 hover:bg-yellow-500/20 transition-colors">
+                className="text-xs bg-yellow-500/10 text-yellow-400 border border-yellow-500/20
+                  rounded-full px-3 py-1 hover:bg-yellow-500/20 transition-colors">
                 Connect Wallet
               </button>
             )}
@@ -120,7 +119,6 @@ export default function Home() {
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-5">
         {walletError && <ErrorBanner error={walletError} onClose={() => setWalletError(null)} />}
 
-        {/* Wallet Card */}
         {walletAddress ? (
           <div className="card glow-teal">
             <div className="flex items-center gap-2 mb-4">
@@ -165,7 +163,6 @@ export default function Home() {
           />
         )}
 
-        {/* Contract Info */}
         <div className="card">
           <h3 className="text-sm font-semibold text-gray-400 mb-3">📋 Contract Info</h3>
           <div className="space-y-2">
@@ -177,7 +174,11 @@ export default function Home() {
               <p className="text-xs text-gray-400 mb-1">Network</p>
               <p className="text-sm text-white">Stellar Testnet</p>
             </div>
-            <a href="https://stellar.expert/explorer/testnet/contract/CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCN3B"
+            <div className="bg-gray-900 rounded-xl p-3">
+              <p className="text-xs text-gray-400 mb-1">Sample Transaction Hash</p>
+              <p className="text-xs font-mono text-yellow-400 break-all">78a7f33328e47960ebee07b1c3d7efd91c9c9be694189ef0e4444addb05a87aa</p>
+            </div>
+            <a href="https://stellar.expert/explorer/testnet"
               target="_blank" rel="noopener noreferrer"
               className="block text-center text-xs text-teal-400 hover:text-teal-300 underline py-2">
               🔍 View on Stellar Explorer ↗
@@ -185,7 +186,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Requirements Badge */}
         <div className="card" style={{ border: '1px solid rgba(234,179,8,0.2)' }}>
           <h3 className="text-sm font-semibold text-yellow-400 mb-3">🟡 Level 2 Requirements Met</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">

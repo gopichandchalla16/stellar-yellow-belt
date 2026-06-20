@@ -14,26 +14,14 @@ export default function WalletModal({ onConnect, onError, onClose }: Props) {
   const handleWalletClick = async (walletId: string, installUrl: string) => {
     setConnecting(walletId);
     try {
-      if (walletId === 'freighter') {
-        // Try actual Freighter connection
-        const address = await connectFreighter();
-        onConnect(address);
-      } else {
-        // For other wallets: check if they expose a Stellar API
-        // Most inject window.xBullSDK, window.rabet, etc.
-        // Fall back to Freighter since it's the most common
-        const address = await connectFreighter();
-        onConnect(address);
-      }
+      const address = await connectFreighter();
+      onConnect(address);
     } catch (err) {
       const msg = err instanceof Error ? err.message.toLowerCase() : '';
       if (msg.includes('not found') || msg.includes('install')) {
-        // Wallet not installed - open install page
         window.open(installUrl, '_blank');
-        onError(err);
-      } else {
-        onError(err);
       }
+      onError(err);
     } finally {
       setConnecting(null);
     }
@@ -41,68 +29,68 @@ export default function WalletModal({ onConnect, onError, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+      style={{ background: 'rgba(4,8,18,0.85)', backdropFilter: 'blur(16px)' }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div
-        className="card w-full max-w-md"
-        style={{ border: '1px solid rgba(234,179,8,0.4)', boxShadow: '0 0 40px rgba(234,179,8,0.15)' }}
-      >
+      <div className="card w-full max-w-md animate-fade-in" style={{
+        border: '1px solid rgba(245,197,24,0.25)',
+        boxShadow: '0 0 0 1px rgba(245,197,24,0.08), 0 32px 80px rgba(0,0,0,0.6), 0 0 60px rgba(245,197,24,0.06)'
+      }}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-1">
           <div>
-            <h2 className="text-xl font-bold text-white">Connect Wallet</h2>
-            <p className="text-sm text-gray-400 mt-1">
-              Choose your Stellar wallet to vote on-chain
-            </p>
+            <h2 className="text-lg font-bold text-white">Connect a Wallet</h2>
+            <p className="text-xs text-gray-500 mt-0.5">Select your Stellar wallet to cast a vote on-chain</p>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-gray-800 text-gray-400 hover:text-white flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition-all text-sm"
           >
             ✕
           </button>
         </div>
 
-        {/* Wallet Options — this is the required screenshot */}
-        <div className="space-y-2 mb-6">
-          {SUPPORTED_WALLETS.map((wallet) => (
+        {/* Divider */}
+        <div className="border-t border-white/[0.06] my-4" />
+
+        {/* Wallet Options */}
+        <div className="space-y-2 mb-5">
+          {SUPPORTED_WALLETS.map((wallet, i) => (
             <button
               key={wallet.id}
               onClick={() => handleWalletClick(wallet.id, wallet.installUrl)}
               disabled={!!connecting}
-              className="w-full flex items-center gap-4 p-4 rounded-xl border border-gray-700
-                hover:border-yellow-500/60 hover:bg-yellow-500/5
-                disabled:opacity-50 disabled:cursor-not-allowed
+              className="w-full flex items-center gap-3 p-3.5 rounded-2xl border border-white/[0.06]
+                hover:border-yellow-500/30 hover:bg-yellow-500/[0.04]
+                disabled:opacity-40 disabled:cursor-not-allowed
                 transition-all duration-200 text-left group"
+              style={{ animationDelay: `${i * 50}ms` }}
             >
-              <span className="text-2xl w-8 text-center">{wallet.icon}</span>
+              <div className="w-10 h-10 rounded-xl bg-white/[0.05] flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-yellow-500/10 transition-colors">
+                {wallet.icon}
+              </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-white text-sm group-hover:text-yellow-300 transition-colors">
+                <p className="font-semibold text-sm text-white group-hover:text-yellow-200 transition-colors">
                   {wallet.name}
                 </p>
                 <p className="text-xs text-gray-500 truncate">{wallet.desc}</p>
               </div>
               {connecting === wallet.id ? (
-                <div className="w-5 h-5 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                <div className="w-4 h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
               ) : (
-                <span className="text-gray-600 group-hover:text-yellow-400 transition-colors">→</span>
+                <span className="text-gray-600 group-hover:text-yellow-400 transition-colors text-sm">→</span>
               )}
             </button>
           ))}
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-800 pt-4">
-          <p className="text-center text-xs text-gray-500">
-            New to Stellar wallets?{' '}
-            <a
-              href="https://freighter.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-yellow-400 hover:text-yellow-300 hover:underline"
-            >
+        <div className="rounded-2xl bg-white/[0.03] border border-white/[0.05] p-3 text-center">
+          <p className="text-xs text-gray-500">
+            Don&apos;t have a wallet?{' '}
+            <a href="https://freighter.app" target="_blank" rel="noopener noreferrer"
+              className="text-yellow-400 hover:text-yellow-300 font-medium underline underline-offset-2">
               Install Freighter →
             </a>
           </p>

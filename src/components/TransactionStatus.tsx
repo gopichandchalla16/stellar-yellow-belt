@@ -11,48 +11,58 @@ export default function TransactionStatus({ status, txHash, onReset }: Props) {
   if (status === 'idle') return null;
 
   return (
-    <div className={`card ${
-      status === 'pending' ? 'border-yellow-500/30' :
-      status === 'success' ? 'border-teal-500/30 glow-teal' :
-      'border-red-500/30'
-    }`} style={{ borderWidth: 1, borderStyle: 'solid' }}>
+    <div className={`card animate-fade-in ${
+      status === 'pending'  ? 'glow-yellow' :
+      status === 'success'  ? 'glow-teal'   : ''
+    }`} style={status === 'error' ? { borderColor: 'rgba(248,113,113,0.25)', boxShadow: '0 0 0 1px rgba(248,113,113,0.1)' } : {}}>
+
       {status === 'pending' && (
-        <div className="text-center py-4">
-          <div className="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-yellow-400 font-semibold">Broadcasting Transaction...</p>
-          <p className="text-xs text-gray-400 mt-1">Waiting for Stellar Testnet confirmation</p>
-          <span className="badge-pending mt-3 inline-block">⏳ Pending</span>
+        <div className="flex flex-col items-center py-6 text-center">
+          <div className="relative mb-5">
+            <div className="w-14 h-14 rounded-full border-2 border-white/10 flex items-center justify-center">
+              <div className="w-10 h-10 border-[3px] border-yellow-400 border-t-transparent rounded-full animate-spin" />
+            </div>
+          </div>
+          <p className="font-bold text-white mb-1">Broadcasting Transaction</p>
+          <p className="text-xs text-gray-400 mb-4">Waiting for Stellar Testnet confirmation...</p>
+          <span className="badge-pending">⏳ Pending</span>
         </div>
       )}
 
       {status === 'success' && (
-        <div className="text-center py-2">
-          <div className="text-5xl mb-3">🎉</div>
-          <p className="text-teal-400 font-bold text-lg">Vote Confirmed!</p>
-          <p className="text-xs text-gray-400 mb-4">Your vote is recorded on Stellar Testnet</p>
-          <span className="badge-success mb-4 inline-block">✅ Success</span>
+        <div className="flex flex-col items-center py-4 text-center">
+          <div className="w-14 h-14 rounded-full bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-3xl mb-4">
+            ✅
+          </div>
+          <p className="font-bold text-white text-lg mb-1">Vote Confirmed!</p>
+          <p className="text-xs text-gray-400 mb-4">Your vote is permanently recorded on-chain</p>
+          <span className="badge-success mb-4">Transaction Successful</span>
           {txHash && (
-            <div className="bg-gray-900 rounded-xl p-3 mt-3 text-left">
-              <p className="text-xs text-gray-400 mb-1">Transaction Hash</p>
-              <p className="text-xs font-mono text-teal-400 break-all">{txHash}</p>
+            <div className="w-full bg-black/30 rounded-2xl p-3 text-left border border-white/[0.05] mb-4">
+              <p className="text-xs text-gray-500 mb-1.5">Transaction Hash</p>
+              <p className="text-xs font-mono text-teal-400 break-all leading-relaxed">{txHash}</p>
               <a
                 href={`https://stellar.expert/explorer/testnet/tx/${txHash}`}
                 target="_blank" rel="noopener noreferrer"
-                className="mt-2 block text-xs text-yellow-400 hover:underline"
-              >🔍 View on Stellar Explorer ↗</a>
+                className="mt-2 inline-flex items-center gap-1 text-xs text-yellow-400 hover:text-yellow-300 font-medium"
+              >
+                🔍 View on Stellar Explorer ↗
+              </a>
             </div>
           )}
-          <button onClick={onReset} className="btn-outline mt-4 max-w-xs mx-auto">Vote Again</button>
+          <button onClick={onReset} className="btn-outline max-w-xs">Vote Again</button>
         </div>
       )}
 
       {status === 'error' && (
-        <div className="text-center py-2">
-          <div className="text-5xl mb-3">❌</div>
-          <p className="text-red-400 font-bold">Transaction Failed</p>
-          <p className="text-xs text-gray-400 mb-4">Check the error above and try again</p>
-          <span className="badge-error mb-4 inline-block">❌ Failed</span>
-          <button onClick={onReset} className="btn-outline mt-2 max-w-xs mx-auto">Try Again</button>
+        <div className="flex flex-col items-center py-4 text-center">
+          <div className="w-14 h-14 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-3xl mb-4">
+            ❌
+          </div>
+          <p className="font-bold text-white mb-1">Transaction Failed</p>
+          <p className="text-xs text-gray-400 mb-4">Check the error message above and try again</p>
+          <span className="badge-error mb-4">Failed</span>
+          <button onClick={onReset} className="btn-outline max-w-xs">Try Again</button>
         </div>
       )}
     </div>

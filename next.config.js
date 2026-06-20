@@ -18,16 +18,6 @@ const nextConfig = {
         'require-addon': false,
       };
     }
-    // Ignore sodium-native warnings
-    config.externals = [
-      ...(Array.isArray(config.externals) ? config.externals : []),
-      ({ request }: { request?: string }, callback: (err?: Error | null, result?: string) => void) => {
-        if (request === 'sodium-native' || request === 'require-addon') {
-          return callback(null, 'commonjs ' + request);
-        }
-        callback();
-      },
-    ];
     config.experiments = {
       ...config.experiments,
       asyncWebAssembly: true,

@@ -7,20 +7,21 @@ export interface WalletError {
 }
 
 export function parseWalletError(error: unknown): WalletError {
-  const msg = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+  const msg =
+    error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
 
-  // Error Type 1: Wallet not found / not installed
+  // Error Type 1: Wallet not installed / not found
   if (
     msg.includes('not found') ||
     msg.includes('not installed') ||
+    msg.includes('install freighter') ||
     msg.includes('no wallet') ||
-    msg.includes('extension') ||
-    msg.includes('freighter') && msg.includes('install')
+    msg.includes('extension')
   ) {
     return {
       type: 'not_found',
-      message: 'Wallet not found',
-      hint: 'Please install Freighter or another Stellar wallet extension and refresh the page.',
+      message: '🔌 Wallet Not Found',
+      hint: 'Freighter wallet is not installed. Click below to install it, then refresh this page.',
     };
   }
 
@@ -31,32 +32,32 @@ export function parseWalletError(error: unknown): WalletError {
     msg.includes('denied') ||
     msg.includes('declined') ||
     msg.includes('user closed') ||
-    msg.includes('user refused')
+    msg.includes('refused')
   ) {
     return {
       type: 'rejected',
-      message: 'Transaction rejected',
-      hint: 'You cancelled the transaction. Click the vote button again and approve it in your wallet.',
+      message: '🚫 Transaction Rejected',
+      hint: 'You cancelled the transaction in your wallet. Click Vote again and approve it.',
     };
   }
 
-  // Error Type 3: Insufficient balance / funds
+  // Error Type 3: Insufficient balance
   if (
     msg.includes('insufficient') ||
-    msg.includes('balance') ||
     msg.includes('underfunded') ||
-    msg.includes('not enough')
+    msg.includes('not enough') ||
+    msg.includes('balance')
   ) {
     return {
       type: 'insufficient',
-      message: 'Insufficient XLM balance',
-      hint: 'You need at least 1 XLM to pay for transaction fees. Use the Friendbot to fund your testnet wallet.',
+      message: '💸 Insufficient XLM Balance',
+      hint: 'You need at least 1 XLM for transaction fees. Fund your testnet wallet using Friendbot.',
     };
   }
 
   return {
     type: 'unknown',
-    message: 'Something went wrong',
+    message: '⚠️ Something Went Wrong',
     hint: msg || 'An unexpected error occurred. Please try again.',
   };
 }

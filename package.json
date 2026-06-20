@@ -13,7 +13,7 @@
     "react": "^18",
     "react-dom": "^18",
     "@stellar/stellar-sdk": "^12.3.0",
-    "@creit.tech/stellar-wallets-kit": "^0.9.4",
+    "@creit.tech/stellar-wallets-kit": "^1.4.0",
     "lucide-react": "^0.378.0"
   },
   "devDependencies": {

@@ -1,12 +1,13 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
-import WalletModal from '@/components/WalletModal';
-import PollCard from '@/components/PollCard';
+import dynamic from 'next/dynamic';
 import TransactionStatus from '@/components/TransactionStatus';
 import ErrorBanner from '@/components/ErrorBanner';
-import { getAccountBalance } from '@/lib/stellar';
 import { parseWalletError, WalletError } from '@/lib/errors';
-import { signTxFreighter } from '@/lib/walletKit';
+
+// Dynamically import components that use browser APIs
+const WalletModal = dynamic(() => import('@/components/WalletModal'), { ssr: false });
+const PollCard = dynamic(() => import('@/components/PollCard'), { ssr: false });
 
 export type TxStatus = 'idle' | 'pending' | 'success' | 'error';
 
@@ -20,6 +21,7 @@ export default function Home() {
   const [votedOption, setVotedOption] = useState<number | null>(null);
 
   const fetchBalance = useCallback(async (addr: string) => {
+    const { getAccountBalance } = await import('@/lib/stellar');
     const bal = await getAccountBalance(addr);
     setBalance(bal);
   }, []);
@@ -56,6 +58,7 @@ export default function Home() {
     setTxHash('');
     try {
       const { callContractVote, NETWORK_PASSPHRASE } = await import('@/lib/stellar');
+      const { signTxFreighter } = await import('@/lib/walletKit');
       const hash = await callContractVote(
         walletAddress,
         optionIndex,
@@ -82,8 +85,7 @@ export default function Home() {
         style={{ background: 'rgba(10,14,26,0.9)', backdropFilter: 'blur(12px)' }}>
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600
-              flex items-center justify-center text-xl font-bold text-gray-900 shadow-lg">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-xl font-bold text-gray-900">
               🗳️
             </div>
             <div>
@@ -92,28 +94,22 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="hidden sm:block text-xs bg-yellow-500/10 text-yellow-400
-              border border-yellow-500/20 rounded-full px-3 py-1">🟡 Testnet</span>
+            <span className="hidden sm:block text-xs bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 rounded-full px-3 py-1">
+              🟡 Testnet
+            </span>
             {walletAddress ? (
               <div className="flex items-center gap-2">
-                <span className="text-xs bg-teal-500/10 text-teal-400
-                  border border-teal-500/20 rounded-full px-3 py-1">
+                <span className="text-xs bg-teal-500/10 text-teal-400 border border-teal-500/20 rounded-full px-3 py-1">
                   ● {shortAddr}
                 </span>
-                <button
-                  onClick={handleDisconnect}
-                  className="text-xs bg-red-500/10 text-red-400 border border-red-500/20
-                    rounded-full px-3 py-1 hover:bg-red-500/20 transition-colors"
-                >
+                <button onClick={handleDisconnect}
+                  className="text-xs bg-red-500/10 text-red-400 border border-red-500/20 rounded-full px-3 py-1 hover:bg-red-500/20 transition-colors">
                   Disconnect
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => setShowWalletModal(true)}
-                className="text-xs bg-yellow-500/10 text-yellow-400 border border-yellow-500/20
-                  rounded-full px-3 py-1 hover:bg-yellow-500/20 transition-colors"
-              >
+              <button onClick={() => setShowWalletModal(true)}
+                className="text-xs bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 rounded-full px-3 py-1 hover:bg-yellow-500/20 transition-colors">
                 Connect Wallet
               </button>
             )}
@@ -122,12 +118,9 @@ export default function Home() {
       </header>
 
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-5">
-        {/* Error Banner */}
-        {walletError && (
-          <ErrorBanner error={walletError} onClose={() => setWalletError(null)} />
-        )}
+        {walletError && <ErrorBanner error={walletError} onClose={() => setWalletError(null)} />}
 
-        {/* Wallet Info Card */}
+        {/* Wallet Card */}
         {walletAddress ? (
           <div className="card glow-teal">
             <div className="flex items-center gap-2 mb-4">
@@ -141,9 +134,7 @@ export default function Home() {
               </div>
               <div className="bg-gray-900 rounded-xl p-3">
                 <p className="text-xs text-gray-400 mb-1">XLM Balance</p>
-                <p className="text-xl font-bold text-white">
-                  {balance} <span className="text-sm text-gray-400">XLM</span>
-                </p>
+                <p className="text-xl font-bold text-white">{balance} <span className="text-sm text-gray-400">XLM</span></p>
               </div>
             </div>
           </div>
@@ -151,19 +142,13 @@ export default function Home() {
           <div className="card border-dashed border-2 border-gray-700 text-center py-10">
             <div className="text-5xl mb-3">🗳️</div>
             <h2 className="text-xl font-bold text-white mb-2">Connect Wallet to Vote</h2>
-            <p className="text-gray-400 text-sm mb-6">
-              Supports Freighter, xBull, Hana, Lobstr, Rabet
-            </p>
-            <button
-              onClick={() => setShowWalletModal(true)}
-              className="btn-yellow max-w-xs mx-auto block"
-            >
+            <p className="text-gray-400 text-sm mb-6">Supports Freighter, xBull, Hana, Lobstr, Rabet</p>
+            <button onClick={() => setShowWalletModal(true)} className="btn-yellow max-w-xs mx-auto block">
               🔌 Connect Wallet
             </button>
           </div>
         )}
 
-        {/* Poll */}
         <PollCard
           walletAddress={walletAddress}
           onVote={handleVote}
@@ -172,7 +157,6 @@ export default function Home() {
           onConnectWallet={() => setShowWalletModal(true)}
         />
 
-        {/* Tx Status */}
         {txStatus !== 'idle' && (
           <TransactionStatus
             status={txStatus}
@@ -187,33 +171,28 @@ export default function Home() {
           <div className="space-y-2">
             <div className="bg-gray-900 rounded-xl p-3">
               <p className="text-xs text-gray-400 mb-1">Deployed Contract Address</p>
-              <p className="text-xs font-mono text-teal-400 break-all">
-                CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCN3B
-              </p>
+              <p className="text-xs font-mono text-teal-400 break-all">CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCN3B</p>
             </div>
             <div className="bg-gray-900 rounded-xl p-3">
               <p className="text-xs text-gray-400 mb-1">Network</p>
               <p className="text-sm text-white">Stellar Testnet</p>
             </div>
-            <a
-              href="https://stellar.expert/explorer/testnet/contract/CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCN3B"
+            <a href="https://stellar.expert/explorer/testnet/contract/CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCN3B"
               target="_blank" rel="noopener noreferrer"
-              className="block text-center text-xs text-teal-400 hover:text-teal-300
-                underline py-2 transition-colors"
-            >
+              className="block text-center text-xs text-teal-400 hover:text-teal-300 underline py-2">
               🔍 View on Stellar Explorer ↗
             </a>
           </div>
         </div>
 
-        {/* Level 2 Requirements Badge */}
+        {/* Requirements Badge */}
         <div className="card" style={{ border: '1px solid rgba(234,179,8,0.2)' }}>
-          <h3 className="text-sm font-semibold text-yellow-400 mb-3">🟡 Level 2 Requirements</h3>
+          <h3 className="text-sm font-semibold text-yellow-400 mb-3">🟡 Level 2 Requirements Met</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
             {[
-              '✅ Multi-wallet modal (StellarWalletsKit)',
+              '✅ Multi-wallet modal',
               '✅ Error: wallet not found',
-              '✅ Error: transaction rejected',
+              '✅ Error: tx rejected',
               '✅ Error: insufficient balance',
               '✅ Soroban contract deployed',
               '✅ Contract called from frontend',

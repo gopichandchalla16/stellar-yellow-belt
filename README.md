@@ -15,7 +15,7 @@ A live on-chain polling dApp built on **Stellar Testnet**. Users connect any Ste
 | Contract deployed on testnet | ✅ Done |
 | Contract called from frontend | ✅ Done |
 | Transaction status tracking (pending/success/fail) | ✅ Done |
-| Minimum 2+ meaningful commits | ✅ Done (8 commits) |
+| Minimum 2+ meaningful commits | ✅ Done (8+ commits) |
 
 ---
 
@@ -35,14 +35,14 @@ A live on-chain polling dApp built on **Stellar Testnet**. Users connect any Ste
 
 ## 📸 Screenshots
 
-### Wallet Options Modal
-![Wallet Modal](public/screenshot-wallet-modal.png)
+### Wallet Options Modal (Multi-wallet support)
+![Wallet Modal](public/screenshot-wallet-modal.jpg)
 
 ### Poll Voting Interface
-![Poll Interface](public/screenshot-poll.png)
+![Poll Interface](public/screenshot-poll.jpg)
 
-### Transaction Success with Hash
-![Transaction Success](public/screenshot-tx-success.png)
+### Transaction Success with Verified Hash
+![Transaction Success](public/screenshot-tx-success.jpg)
 
 ---
 
@@ -54,13 +54,13 @@ A live on-chain polling dApp built on **Stellar Testnet**. Users connect any Ste
 | **Network** | Stellar Testnet |
 | **Explorer** | [View Contract on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCN3B) |
 
-### ✅ Verified Transaction Hash (contract call — vote cast on-chain)
+### ✅ Verified Transaction Hash (vote cast on-chain)
 ```
 71c2fad2ba2da295c4e875484494dc7dea590133fdf85384628f8feea8b918b0
 ```
 🔍 [View on Stellar Explorer](https://stellar.expert/explorer/testnet/tx/71c2fad2ba2da295c4e875484494dc7dea590133fdf85384628f8feea8b918b0)
 
-> This transaction was signed by Freighter wallet and submitted to Stellar Testnet, encoding a vote for option 0 ("DeFi & Token Swaps") in the transaction memo. It is permanently verifiable on-chain.
+> This transaction was signed by Freighter wallet, submitted to Stellar Testnet, and encodes a vote for "DeFi & Token Swaps" in the transaction memo. It is permanently verifiable on-chain.
 
 ---
 
@@ -69,8 +69,8 @@ A live on-chain polling dApp built on **Stellar Testnet**. Users connect any Ste
 - **Next.js 14** (App Router + TypeScript)
 - **Tailwind CSS** — glassmorphism UI design
 - **@stellar/freighter-api** — multi-wallet connect
-- **@stellar/stellar-sdk v12** — Horizon transactions + Soroban RPC
-- **Soroban (Rust)** — on-chain poll smart contract (`contracts/poll/src/lib.rs`)
+- **@stellar/stellar-sdk v12** — Horizon + Soroban RPC
+- **Soroban (Rust)** — on-chain poll smart contract
 - **Stellar Horizon + Soroban RPC** — testnet APIs
 
 ---
@@ -118,7 +118,7 @@ npm run dev
     │   ├── TransactionStatus.tsx # Pending/success/fail states
     │   └── ErrorBanner.tsx      # 3 error types display
     └── lib/
-        ├── walletKit.ts         # Freighter API wallet connect
+        ├── walletKit.ts         # Freighter wallet connect
         ├── stellar.ts           # Horizon transaction calls
         └── errors.ts            # Error type parsing (3 types)
 ```

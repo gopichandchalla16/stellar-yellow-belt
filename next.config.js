@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   webpack: (config, { isServer }) => {
-    // Fix sodium-native / stellar-sdk node-only modules in browser
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -16,8 +15,19 @@ const nextConfig = {
         https: false,
         zlib: false,
         'sodium-native': false,
+        'require-addon': false,
       };
     }
+    // Ignore sodium-native warnings
+    config.externals = [
+      ...(Array.isArray(config.externals) ? config.externals : []),
+      ({ request }: { request?: string }, callback: (err?: Error | null, result?: string) => void) => {
+        if (request === 'sodium-native' || request === 'require-addon') {
+          return callback(null, 'commonjs ' + request);
+        }
+        callback();
+      },
+    ];
     config.experiments = {
       ...config.experiments,
       asyncWebAssembly: true,

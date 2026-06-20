@@ -1,13 +1,4 @@
 'use client';
-import {
-  Horizon,
-  SorobanRpc,
-  TransactionBuilder,
-  Contract,
-  BASE_FEE,
-  nativeToScVal,
-  TransactionBuilder as TxBuilder,
-} from '@stellar/stellar-sdk';
 
 export const NETWORK_PASSPHRASE = 'Test SDF Network ; September 2015';
 export const HORIZON_URL = 'https://horizon-testnet.stellar.org';
@@ -16,6 +7,7 @@ export const CONTRACT_ID = 'CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHG
 
 export async function getAccountBalance(publicKey: string): Promise<string> {
   try {
+    const { Horizon } = await import('@stellar/stellar-sdk');
     const server = new Horizon.Server(HORIZON_URL);
     const account = await server.loadAccount(publicKey);
     const xlmBalance = account.balances.find(
@@ -34,6 +26,18 @@ export async function callContractVote(
   optionIndex: number,
   signTx: (xdr: string) => Promise<string>
 ): Promise<string> {
+  const {
+    SorobanRpc,
+    TransactionBuilder,
+    Contract,
+    BASE_FEE,
+    nativeToScVal,
+  } = await import('@stellar/stellar-sdk');
+
+  if (!SorobanRpc || !SorobanRpc.Server) {
+    throw new Error('SorobanRpc not available in this build. Try refreshing.');
+  }
+
   const rpc = new SorobanRpc.Server(SOROBAN_URL);
   const account = await rpc.getAccount(publicKey);
   const contract = new Contract(CONTRACT_ID);
@@ -48,7 +52,7 @@ export async function callContractVote(
 
   const preparedTx = await rpc.prepareTransaction(tx);
   const signedXdr = await signTx(preparedTx.toXDR());
-  const signedTx = TxBuilder.fromXDR(signedXdr, NETWORK_PASSPHRASE);
+  const signedTx = TransactionBuilder.fromXDR(signedXdr, NETWORK_PASSPHRASE);
 
   const response = await rpc.sendTransaction(signedTx);
   if (response.status === 'ERROR')
